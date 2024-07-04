@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 4100;
 //     }
 // );
 
-
+// // io.use(authenticateSocketUserHandshake);
 
 // io.on("connection", (socket) =>
 // {

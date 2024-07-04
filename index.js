@@ -9,7 +9,7 @@ const http = require('http');
 const connectToMongo = require('./utils/db');
 const Stock = require('./model/stock.model')
 
-const { socketAuth, authenticateSocketUserHandshake } = require('./middlewares/socketAuth');
+// const { socketAuth, authenticateSocketUserHandshake } = require('./middlewares/socketAuth');
 
 
 const { generateRandomStockData } = require('./utils/cronjobs')
@@ -27,118 +27,118 @@ app.use(express.json());
 connectToMongo();
 const PORT = process.env.PORT || 4100;
 
-const socketServer = http.createServer();
-const io = require('socket.io')(socketServer,
-    {
-        cors: "http://192.168.29.241:8081",
+// const socketServer = http.createServer();
+// const io = require('socket.io')(socketServer,
+//     {
+//         cors: "http://192.168.29.241:8081",
 
-    }
-);
-
-// io.use(authenticateSocketUserHandshake);
-
-io.on("connection", (socket) =>
-{
-
-    console.log('A client connected');
+//     }
+// );
 
 
-    let stockUpdatesIntervalMultiple;
-    let stockUpdatesIntervalSingle;
+
+// io.on("connection", (socket) =>
+// {
+
+//     console.log('A client connected');
 
 
-    socket.on('subscribeClientToSingleStock', async (stockInfo) =>
-    {
-
-        console.log("Client Subscribed to " + stockInfo);
+//     let stockUpdatesIntervalMultiple;
+//     let stockUpdatesIntervalSingle;
 
 
-        async function sendStockUpdates ()
-        {
-            try
-            {
+//     socket.on('subscribeClientToSingleStock', async (stockInfo) =>
+//     {
 
-                let stockDetails = await Stock.findById({ _id: stockInfo });
-
-                if (!stockDetails)
-                {
-                    console.log("not found")
-                } else
-                {
-                    socket.emit(`${stockInfo}`, stockDetails.current_price);
-                }
+//         console.log("Client Subscribed to " + stockInfo);
 
 
-            } catch (error)
-            {
-                console.log(error)
-            }
-        }
+//         async function sendStockUpdates ()
+//         {
+//             try
+//             {
 
-        sendStockUpdates();
+//                 let stockDetails = await Stock.findById({ _id: stockInfo });
 
-        stockUpdatesIntervalSingle = setInterval(sendStockUpdates, 60000);
-
-
-    })
-
-    socket.on('subscribeClientToMultipleStock', async (stocksInfo) =>
-    {
-
-        console.log("Client Subscribed to Multiple Stocks");
+//                 if (!stockDetails)
+//                 {
+//                     console.log("not found")
+//                 } else
+//                 {
+//                     socket.emit(`${stockInfo}`, stockDetails.current_price);
+//                 }
 
 
-        const sendStockUpdates = async () =>
-        {
+//             } catch (error)
+//             {
+//                 console.log(error)
+//             }
+//         }
+
+//         sendStockUpdates();
+
+//         stockUpdatesIntervalSingle = setInterval(sendStockUpdates, 60000);
+
+
+//     })
+
+//     socket.on('subscribeClientToMultipleStock', async (stocksInfo) =>
+//     {
+
+//         console.log("Client Subscribed to Multiple Stocks");
+
+
+//         const sendStockUpdates = async () =>
+//         {
 
 
 
            
-            let stockDetails = await Stock.find({ _id: { $in: stocksInfo } })
+//             let stockDetails = await Stock.find({ _id: { $in: stocksInfo } })
            
 
-            let stockUpdateData = stockDetails?.map((item) =>
-            {
-                return {
-                    _id: item._id,
-                    current_price: item?.current_price
-                }
-            })
+//             let stockUpdateData = stockDetails?.map((item) =>
+//             {
+//                 return {
+//                     _id: item._id,
+//                     current_price: item?.current_price
+//                 }
+//             })
 
-            socket.emit("multiplestockdata",stockUpdateData)
-
-
+//             socket.emit("multiplestockdata",stockUpdateData)
 
 
 
-        }
-
-        sendStockUpdates();
-
-        stockUpdatesIntervalMultiple = setInterval(sendStockUpdates, 30000);
 
 
-    })
+//         }
 
-    socket.on('ping', () =>
-    {
-        console.log('Received ping from client:', socket.id);
-        socket.emit('pong'); // Send back a pong event to confirm connection
-    });
+//         sendStockUpdates();
 
-    socket.on("disconnect", () =>
-    {
-        clearTimeout(stockUpdatesIntervalSingle);
-        clearTimeout(stockUpdatesIntervalMultiple);
-        console.log("client disconnected")
-    })
+//         stockUpdatesIntervalMultiple = setInterval(sendStockUpdates, 30000);
 
-})
 
-socketServer.listen(process.env.SOCKET_PORT, () =>
-{
-    console.log('Web socket started at port ' + process.env.SOCKET_PORT);
-})
+//     })
+
+//     socket.on('ping', () =>
+//     {
+//         console.log('Received ping from client:', socket.id);
+//         socket.emit('pong'); // Send back a pong event to confirm connection
+//     });
+
+//     socket.on("disconnect", () =>
+//     {
+//         clearTimeout(stockUpdatesIntervalSingle);
+//         clearTimeout(stockUpdatesIntervalMultiple);
+//         console.log("client disconnected")
+//     })
+
+// })
+
+// socketServer.listen(process.env.SOCKET_PORT, () =>
+// {
+//     console.log('Web socket started at port ' + process.env.SOCKET_PORT);
+// })
 
 
 

@@ -5,6 +5,12 @@ const StockSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    complete_name:{
+        type:String
+    },
+    current_price:{
+        type:String
+    },
     stock_link:{
         type:String,
         trim:true

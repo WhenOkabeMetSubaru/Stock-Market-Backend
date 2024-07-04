@@ -149,6 +149,46 @@ const attachUser = async (req, res, next) =>
     next()
 }
 
+const checkTokenValid = async(req,res)=>{
+    try {
+        
+        let decoded = jsonwt.verify(req.headers.authorization.split(" ")[1], process.env.SECRET_HASH_KEY);
+
+
+        if (!decoded)
+        {
+            return res.status(404).json({
+                error: true,
+                info: "Not Found"
+            })
+        }
+
+        let userDetails = await User.findById({ _id: decoded._id });
+        if (!userDetails)
+        {
+            return res.status(403).json({
+                error: true,
+                info: 'No User Found'
+            })
+        }
+
+        userDetails.hashed_password = undefined;
+        userDetails.salt = undefined;
+        userDetails._id = "";
+
+        return res.json({
+            error:false,
+            info:"Success"
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            error:true,
+            info:error.message
+        })
+    }
+}
+
 const isUser = async (req, res, next) =>
 {
     if (req.user.user_type !== 'user')
@@ -199,4 +239,5 @@ const isValidUserAny = async (req, res, next) =>
     next()
 }
 
-module.exports = { signin, signout, requireSignin, hasAuthorization, signUp, attachUser, isUser, isAdmin, isOwner, isValidUserAny }
+module.exports = { signin, signout,checkTokenValid,
+     requireSignin, hasAuthorization, signUp, attachUser, isUser, isAdmin, isOwner, isValidUserAny }

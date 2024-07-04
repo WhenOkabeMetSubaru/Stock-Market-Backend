@@ -5,9 +5,14 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         enum: ['buy', 'sell']
     },
+    order_status_in_holdings:{
+        type:String,
+        enum:['bought','sold'],
+        default:'bought'
+    },
     order_status: {
         type: String,
-        enum: ['pending', 'complete', 'cancelled', 'rejected'],
+        enum: ['pending', 'completed', 'cancelled', 'rejected'],
         default: 'pending'
     },
     created_by: {
@@ -20,27 +25,41 @@ const OrderSchema = new mongoose.Schema({
         default:'equity'
     },
     trade_type: {    //MIS,NRML
-        type: String
+        type: String,
+        enum:["mis","nrml"],
+        default:"mis"
     },
     order_placed_type_info: {    //Market,ilimit,sl,sl-m
-        type: String
+        type: String,
+        enum:["market","limit","sl","sl-m"]
     },
     order_primary_type:{   //regular,co,amo,iceberg
-        type:String
+        type:String,
+        enum:["regular","co","amo","iceberg"]
     },
     item: {
         type: mongoose.Schema.ObjectId,
         ref: "Stock"
     },
+    total_amount:{
+        type:Number
+    },
     quantity: {
         type: Number
     },
-    placed_price: {
+    order_placed_at_price_initial: {
         type: Number
     },
-    order_placed_at_price: {
+    order_placed_at_price_final: {
         type: Number
     },
+    order_sold_at_price_initial: {
+        type: Number
+    },
+    order_sold_at_price_final: {
+        type: Number
+    },
+
     trigger: {
         flag: Boolean,
         price: Number
@@ -64,7 +83,8 @@ const OrderSchema = new mongoose.Schema({
         time:String
     },
     validity:{
-        type:String
+        type:String,
+        enum:['day','ioc','minutes']
     },
     stop_loss_trigger:{
         type:Number

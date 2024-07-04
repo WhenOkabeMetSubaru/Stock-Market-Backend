@@ -1,13 +1,14 @@
 
 const Stock = require('../model/stock.model')
 const WatchList  = require('../model/watchlist.model');
-const stockList = require('../finalitems.json')
+const stockList = require('../nifty500finalitems.json')
 
 const getStockByID = async (req, res, next) =>
 {
     try
     {
         const stockDetails = await Stock.findById({ _id:req.params.stockId });
+       
 
         if (!stockDetails)
         {
@@ -17,8 +18,14 @@ const getStockByID = async (req, res, next) =>
             });
         }
 
-        req.stock = stockDetails;
-        next();
+      
+        return res.status(200).json({
+            error:false,
+            info:"Stock Found",
+            data:stockDetails
+        })
+
+       
     } catch (error)
     {
         return res.status(400).json({
@@ -36,10 +43,11 @@ const addNewStock = async (req, res) =>
         // const savedStock = await newStock.save();
 
        
-
+    
         for(let i = 0;i<stockList?.length;i++){
           
            if(typeof stockList[i]=="object"){
+           
             let keyLength  = Object.keys(stockList[i]);
             
             if(keyLength.length>0){
@@ -59,6 +67,7 @@ const addNewStock = async (req, res) =>
         });
     } catch (error)
     {
+        console.log(error)
         return res.status(400).json({
             error: true,
             info: 'Could not create stock for some unknown reason',

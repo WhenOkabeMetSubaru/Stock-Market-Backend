@@ -8,6 +8,10 @@ Router.route('/v1/users/:userId')
 
 Router.route('/v1/user/all')
     .get(UserCtrl.getAllUsers)
+    
+
+Router.route('/v1/user/token/check')
+    .get(AuthCtrl.checkTokenValid)
 
 Router.route('/v1/users/:userId')
     .put(AuthCtrl.requireSignin, AuthCtrl.attachUser, AuthCtrl.hasAuthorization, UserCtrl.updateUserByID);

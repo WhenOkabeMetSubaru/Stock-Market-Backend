@@ -261,8 +261,14 @@ const updateWatchListByID = async (req, res) =>
     {
 
      
-
-        let updateWatchList = await WatchList.findByIdAndUpdate({ _id: req.params.watchId },req.body,{new:true})
+        console.log(req.body)
+        let updateWatchList = await WatchList.findByIdAndUpdate({ _id: req.params.watchId },{
+            $set:{
+                title:req.body.title,
+                stocks:req.body.stocks,
+                stocks_count:req.body.stocks_count
+            }
+        },{new:true})
 
 
         return res.json({
